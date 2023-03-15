@@ -29,18 +29,11 @@ router.get("/:contactId", async (req, res, next) => {
     const { contactId } = req.params;
 
     const contactById = await getContactById(contactId);
-    if (contactById) {
-      res.json({
-        status: "success",
-        code: 200,
-        contactById,
-      });
-    } else {
-      res.json({
-        code: 404,
-        message: "Not found",
-      });
-    }
+    res.json({
+      status: "success",
+      code: 200,
+      contactById,
+    });
   } catch (error) {
     console.log(error.message);
   }
@@ -55,7 +48,11 @@ router.post("/", async (req, res, next) => {
           minDomainSegments: 2,
         })
         .required(),
-      phone: Joi.string().min(3).max(15).required(),
+      phone: Joi.string()
+        .min(3)
+        .max(15)
+        .pattern(/^[0-9-()+ ]+$/)
+        .required(),
     });
 
     const validationResult = schema.validate(req.body);
@@ -86,61 +83,53 @@ router.post("/", async (req, res, next) => {
 });
 
 router.delete("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  const contactRemovedById = await removeContact(contactId);
+  try {
+    const { contactId } = req.params;
 
-  console.log("contactRemovedById", contactRemovedById);
+    await removeContact(contactId);
 
-  if (contactRemovedById) {
     res.json({
       code: 200,
       message: "contact deleted",
     });
-  } else {
-    res.json({
-      code: 404,
-      message: "Not found",
-    });
+  } catch (error) {
+    console.log(error.message);
   }
 });
 
 router.put("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params;
-  // const body = req.body;
+  try {
+    const { contactId } = req.params;
 
-  const schema = Joi.object({
-    name: Joi.string().min(3).max(30),
-    email: Joi.string().email({
-      minDomainSegments: 2,
-    }),
-    phone: Joi.string().min(3).max(15),
-  }).min(1);
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(30),
+      email: Joi.string().email({
+        minDomainSegments: 2,
+      }),
+      phone: Joi.string().min(3).max(15),
+    }).min(1);
 
-  const validationResult = schema.validate(req.body);
+    const validationResult = schema.validate(req.body);
 
-  console.log("validationResult", validationResult);
+    if (validationResult.error) {
+      return res.json({
+        status: "bad request",
+        code: 400,
+        message: "missing field",
+      });
+    }
 
-  if (validationResult.error) {
-    return res.json({
-      status: "bad request",
-      code: 400,
-      message: "missing field",
-    });
-  }
+    const contactUpdated = await updateContact(contactId, req.body);
 
-  const contactUpdated = await updateContact(contactId, req.body);
-
-  if (contactUpdated) {
-    res.json({
-      status: "success",
-      code: 200,
-      data: contactUpdated,
-    });
-  } else {
-    res.json({
-      code: 404,
-      message: "Not found",
-    });
+    if (contactUpdated) {
+      res.json({
+        status: "success",
+        code: 200,
+        data: contactUpdated,
+      });
+    }
+  } catch (error) {
+    console.log(error.message);
   }
 });
 

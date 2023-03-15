@@ -21,9 +21,9 @@ const listContacts = async () => {
 
 const getContactById = async (contactId) => {
   try {
-    const contacts = await getParsedPath(contactsPath);
+    const contactsDB = await getParsedPath(contactsPath);
 
-    return contacts.find((el) => el.id === contactId);
+    return contactsDB.find((el) => el.id === contactId);
   } catch (error) {
     console.log(error.message);
   }
@@ -33,15 +33,11 @@ const removeContact = async (contactId) => {
   try {
     const contactsDB = await getParsedPath(contactsPath);
 
-    const hasIdToDeleted = contactsDB.find((el) => el.id === contactId);
-
-    const deletedContact = contactsDB.filter(
-      (el) => el.id !== hasIdToDeleted.id
-    );
+    const deletedContact = contactsDB.filter((el) => el.id !== contactId);
 
     await fs.writeFile(contactsPath, JSON.stringify(deletedContact));
 
-    return hasIdToDeleted;
+    return deletedContact;
   } catch (error) {
     console.log(error.message);
   }
