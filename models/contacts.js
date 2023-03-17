@@ -19,21 +19,21 @@ const listContacts = async () => {
   }
 };
 
-const getContactById = async (contactId) => {
+const getContactById = async (id) => {
   try {
     const contactsDB = await getParsedPath(contactsPath);
 
-    return contactsDB.find((el) => el.id === contactId);
+    return contactsDB.find((el) => el.id === id);
   } catch (error) {
     console.log(error.message);
   }
 };
 
-const removeContact = async (contactId) => {
+const removeContact = async (id) => {
   try {
     const contactsDB = await getParsedPath(contactsPath);
 
-    const deletedContact = contactsDB.filter((el) => el.id !== contactId);
+    const deletedContact = contactsDB.filter((el) => el.id !== id);
 
     await fs.writeFile(contactsPath, JSON.stringify(deletedContact));
 
@@ -66,13 +66,13 @@ const addContact = async (body) => {
   }
 };
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (id, body) => {
   const { name, email, phone } = body;
 
   const contactsDB = await getParsedPath(contactsPath);
 
   contactsDB.forEach((el) => {
-    if (el.id === contactId) {
+    if (el.id === id) {
       if (name) {
         el.name = name;
       }
@@ -87,7 +87,7 @@ const updateContact = async (contactId, body) => {
 
   await fs.writeFile(contactsPath, JSON.stringify(contactsDB));
 
-  const hasContactToUpdate = contactsDB.find((el) => el.id === contactId);
+  const hasContactToUpdate = contactsDB.find((el) => el.id === id);
 
   const updatedContact = contactsDB.find(
     (el) => el.id === hasContactToUpdate.id
