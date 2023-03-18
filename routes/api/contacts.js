@@ -1,25 +1,29 @@
-const express = require('express')
+const express = require("express");
+const router = express.Router();
 
-const router = express.Router()
+const {
+  postContactValidation,
+  putContactValidation,
+} = require("../../middlewares/validationMiddleware");
 
-router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const { asyncWrapper } = require("../../helpers/apiHelpers");
 
-router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+const {
+  getContacts,
+  getContactOnId,
+  postContact,
+  deleteContact,
+  putContact,
+} = require("../../controllers/contactsControllers");
 
-router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/", asyncWrapper(getContacts));
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.get("/:id", asyncWrapper(getContactOnId));
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+router.post("/", postContactValidation, asyncWrapper(postContact));
 
-module.exports = router
+router.delete("/:id", asyncWrapper(deleteContact));
+
+router.put("/:id", putContactValidation, asyncWrapper(putContact));
+
+module.exports = router;
