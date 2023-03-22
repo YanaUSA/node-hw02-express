@@ -2,7 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const mongoose = require("mongoose");
+const { mongoose, Types } = require("mongoose");
 const Contact = require("./models/contactsModel");
 
 dotenv.config({ path: "./.env" });
@@ -34,7 +34,15 @@ app.use("/api/contacts/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const idExists = await Contact.findById(id);
+    const idIsValid = Types.ObjectId.isValid(id);
+
+    if (!idIsValid) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    // const idExists = await Contact.findById(id);
+
+    const idExists = await Contact.exists({ _id: id });
 
     if (!idExists) {
       return res.status(404).json({ message: "Not found" });
