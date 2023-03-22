@@ -49,7 +49,9 @@ const updateContact = async (id, body) => {
 
 const updateStatusContact = async (id, body) => {
   try {
-    const updatedStatusContact = await Contact.findByIdAndUpdate(id, body);
+    const updatedStatusContact = await Contact.findByIdAndUpdate(id, body, {
+      new: true,
+    });
 
     return updatedStatusContact;
   } catch (error) {

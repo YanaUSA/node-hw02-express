@@ -23,7 +23,7 @@ const getContactOnId = async (req, res, next) => {
 const postContact = async (req, res, next) => {
   const newContact = await addContact(req.body);
 
-  res.status(201).json({ newContact });
+  res.status(201).json(newContact);
 };
 
 const deleteContact = async (req, res, next) => {
