@@ -4,6 +4,7 @@ const {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 } = require("../models/contacts");
 
 const getContacts = async (req, res, next) => {
@@ -20,14 +21,9 @@ const getContactOnId = async (req, res, next) => {
 };
 
 const postContact = async (req, res, next) => {
-  const { id, name, email, phone } = await addContact(req.body);
+  const newContact = await addContact(req.body);
 
-  res.status(201).json({
-    id,
-    name,
-    email,
-    phone,
-  });
+  res.status(201).json(newContact);
 };
 
 const deleteContact = async (req, res, next) => {
@@ -50,10 +46,21 @@ const putContact = async (req, res, next) => {
   }
 };
 
+const patchStatusContact = async (req, res, next) => {
+  const { id } = req.params;
+
+  const updatedStatus = await updateStatusContact(id, req.body);
+
+  if (updatedStatus) {
+    res.status(200).json(updatedStatus);
+  }
+};
+
 module.exports = {
   getContacts,
   getContactOnId,
   postContact,
   deleteContact,
   putContact,
+  patchStatusContact,
 };
