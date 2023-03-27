@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const { mongoose, Schema } = require("mongoose");
 
-const contactSchema = new mongoose.Schema({
+const contactSchema = new Schema({
   name: {
     type: String,
     required: [true, "Set name for contact"],
@@ -15,6 +15,10 @@ const contactSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
     // required: true,
+  },
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "user",
   },
 });
 
