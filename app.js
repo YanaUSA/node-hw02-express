@@ -8,6 +8,7 @@ const Contact = require("./models/contactsModel");
 dotenv.config({ path: "./.env" });
 
 const contactsRouter = require("./routes/api/contacts");
+const usersRouter = require("./routes/api/users");
 
 const app = express();
 
@@ -53,6 +54,8 @@ app.use("/api/contacts/:id", async (req, res, next) => {
     console.log(error.message);
   }
 });
+
+app.use("/api/users", usersRouter);
 
 app.use("/api/contacts", contactsRouter);
 

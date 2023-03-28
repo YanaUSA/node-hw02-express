@@ -17,8 +17,7 @@
     "joi": "^17.8.4",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.2",
-    "morgan": "^1.10.0",
-    "uuid": "^9.0.0"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "eslint": "7.19.0",

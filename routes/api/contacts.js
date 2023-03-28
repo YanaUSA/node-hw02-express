@@ -5,7 +5,7 @@ const {
   postContactValidation,
   putContactValidation,
   updateStatusContactValidation,
-} = require("../../middlewares/validationMiddleware");
+} = require("../../middlewares/contactsValidationMiddleware");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
 
