@@ -20,50 +20,32 @@ const postUserValidation = (req, res, next) => {
 
     return res
       .status(400)
-      .json({ message: `missing required '${validationError}' field` });
+      .json({ message: `${validationError} field doesn't match the pattern` });
   }
 
   next();
 };
 
-// const putContactValidation = (req, res, next) => {
-//   const schema = Joi.object({
-//     name: Joi.string().min(3).max(30),
-//     email: Joi.string().email({
-//       minDomainSegments: 2,
-//     }),
-//     phone: Joi.string().min(3).max(15),
-//   }).min(1);
+const postUserLoginValidation = (req, res, next) => {
+  const schema = Joi.object({
+    password: Joi.string().regex(PASSWD_REGEX).required(),
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+      })
+      .required(),
+  });
 
-//   const validationResult = schema.validate(req.body);
+  const validationResult = schema.validate(req.body);
 
-//   if (validationResult.error) {
-//     return res.status(400).json({
-//       message: "missing field",
-//     });
-//   }
+  if (validationResult.error) {
+    return res.status(400).json({ message: `Email or password is invalid` });
+  }
 
-//   next();
-// };
-
-// const updateStatusContactValidation = (req, res, next) => {
-//   const schema = Joi.object({
-//     favorite: Joi.boolean().required(),
-//   });
-
-//   const validationResult = schema.validate(req.body);
-
-//   if (validationResult.error) {
-//     return res.status(400).json({
-//       message: "missing field favorite",
-//     });
-//   }
-
-//   next();
-// };
+  next();
+};
 
 module.exports = {
   postUserValidation,
-  //   putContactValidation,
-  //   updateStatusContactValidation,
+  postUserLoginValidation,
 };

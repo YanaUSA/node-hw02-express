@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+// const { Types } = require("mongoose");
+// const Contact = require("../../models/contactsModel");
 
 const {
   postContactValidation,
@@ -17,6 +19,12 @@ const {
   putContact,
   patchStatusContact,
 } = require("../../controllers/contactsControllers");
+const { protectedRoutMiddleware } = require("../../middlewares/authMiddleware");
+const { checkIfIdExist } = require("../../middlewares/checkIfIdExist");
+
+router.use(asyncWrapper(protectedRoutMiddleware));
+
+router.use("/:id", asyncWrapper(checkIfIdExist));
 
 router.get("/", asyncWrapper(getContacts));
 
