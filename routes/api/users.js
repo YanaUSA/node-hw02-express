@@ -12,6 +12,7 @@ const {
   postUser,
   postLoggedUser,
   postLogoutUser,
+  getCurrentUser,
 } = require("../../controllers/usersControllers");
 
 const { protectedRoutMiddleware } = require("../../middlewares/authMiddleware");
@@ -22,6 +23,6 @@ router.post("/login", postUserLoginValidation, asyncWrapper(postLoggedUser));
 
 router.post("/logout", protectedRoutMiddleware, postLogoutUser);
 
-router.get("/current");
+router.get("/current", protectedRoutMiddleware, getCurrentUser);
 
 module.exports = router;

@@ -62,17 +62,23 @@ const postLoggedUser = async (req, res) => {
 const postLogoutUser = async (req, res) => {
   const loggedUser = req.user;
 
-  const loggedOutUser = await deleteTokenFromDB(loggedUser.id);
-
-  if (!loggedOutUser) {
-    return res.status(401).json({ message: "Not authorized" });
-  }
+  await deleteTokenFromDB(loggedUser.id);
 
   res.sendStatus(204);
+};
+
+const getCurrentUser = async (req, res) => {
+  const { email, subscription } = req.user;
+
+  res.status(200).json({
+    email,
+    subscription,
+  });
 };
 
 module.exports = {
   postUser,
   postLoggedUser,
   postLogoutUser,
+  getCurrentUser,
 };
