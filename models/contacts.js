@@ -1,8 +1,16 @@
 const Contact = require("./contactsModel");
 
-const listContacts = async () => {
+const listContacts = async (skip, paginationLimit, favorite) => {
   try {
-    const contacts = await Contact.find();
+    const contacts = await Contact.find(favorite ? { favorite } : null)
+      .skip(skip)
+      .limit(paginationLimit);
+
+    // const total = await Contact.count();
+    // const contactsPerPage = contacts.length;
+
+    // return { total, contactsPerPage, contacts };
+
     return contacts;
   } catch (error) {
     console.log(error.message);

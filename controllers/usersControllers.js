@@ -1,25 +1,14 @@
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
-
 const {
   addUser,
   logUser,
   saveTokenForUser,
   deleteTokenFromDB,
+  setSubscription,
 } = require("../utils/userUtils");
 const { signToken } = require("../services/services");
 
 const postUser = async (req, res, next) => {
-  const { password, ...restUserData } = req.body;
-
-  const salt = await bcrypt.genSalt(saltRounds);
-
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const newUser = await addUser({
-    ...restUserData,
-    password: hashedPassword,
-  });
+  const newUser = await addUser(req.body);
 
   if (!newUser) {
     return res.status(409).json({ message: "Email in use" });
@@ -41,7 +30,10 @@ const postLoggedUser = async (req, res) => {
     return res.status(401).json({ message: "Email or password is wrong" });
   }
 
-  const passwordIsValid = await bcrypt.compare(password, loggedUser.password);
+  const passwordIsValid = await loggedUser.checkPassword(
+    password,
+    loggedUser.password
+  );
 
   if (!passwordIsValid) {
     return res.status(401).json({ message: "Email or password is wrong" });
@@ -76,9 +68,28 @@ const getCurrentUser = async (req, res) => {
   });
 };
 
+const patchSubscription = async (req, res) => {
+  const changeSubscription = req.body;
+  const loggedUser = req.user;
+
+  const changedSubscription = await setSubscription(
+    loggedUser.id,
+    changeSubscription
+  );
+
+  if (!changedSubscription) {
+    return res.status(400).json({ message: "Wrong subscription value" });
+  }
+
+  const { email, subscription } = changedSubscription;
+
+  res.sendStatus(200).json({ user: { email, subscription } });
+};
+
 module.exports = {
   postUser,
   postLoggedUser,
   postLogoutUser,
   getCurrentUser,
+  patchSubscription,
 };

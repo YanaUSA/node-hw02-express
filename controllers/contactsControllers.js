@@ -8,7 +8,13 @@ const {
 } = require("../models/contacts");
 
 const getContacts = async (req, res, next) => {
-  const data = await listContacts();
+  const { page, limit, favorite } = req.query;
+
+  const paginationPage = +page || 1;
+  const paginationLimit = +limit || 20;
+  const skip = (paginationPage - 1) * paginationLimit;
+
+  const data = await listContacts(skip, paginationLimit, favorite);
 
   res.status(200).json(data);
 };

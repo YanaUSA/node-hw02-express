@@ -13,6 +13,7 @@ const {
   postLoggedUser,
   postLogoutUser,
   getCurrentUser,
+  patchSubscription,
 } = require("../../controllers/usersControllers");
 
 const { protectedRoutMiddleware } = require("../../middlewares/authMiddleware");
@@ -21,8 +22,10 @@ router.post("/register", postUserValidation, asyncWrapper(postUser));
 
 router.post("/login", postUserLoginValidation, asyncWrapper(postLoggedUser));
 
-router.post("/logout", protectedRoutMiddleware, postLogoutUser);
+router.post("/logout", protectedRoutMiddleware, asyncWrapper(postLogoutUser));
 
-router.get("/current", protectedRoutMiddleware, getCurrentUser);
+router.get("/current", protectedRoutMiddleware, asyncWrapper(getCurrentUser));
+
+router.patch("/", protectedRoutMiddleware, asyncWrapper(patchSubscription));
 
 module.exports = router;

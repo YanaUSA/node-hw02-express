@@ -51,4 +51,27 @@ const deleteTokenFromDB = async (id) => {
   }
 };
 
-module.exports = { addUser, logUser, saveTokenForUser, deleteTokenFromDB };
+const setSubscription = async (id, subscription) => {
+  try {
+    const getUserSubscription = await User.findByIdAndUpdate(
+      id,
+      { subscription },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    return getUserSubscription;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+module.exports = {
+  addUser,
+  logUser,
+  saveTokenForUser,
+  deleteTokenFromDB,
+  setSubscription,
+};

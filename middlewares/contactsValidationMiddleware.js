@@ -64,8 +64,24 @@ const updateStatusContactValidation = (req, res, next) => {
   next();
 };
 
+const queryValidation = (req, res, next) => {
+  const schema = Joi.object({
+    page: Joi.number().integer().positive(),
+    limit: Joi.number().integer().positive().min(3).less(31),
+    favorite: Joi.bool(),
+  });
+
+  const validationResult = schema.validate(req.query);
+
+  if (validationResult.error) {
+    return res.status(400).json({ message: "Wrong query field" });
+  }
+  next();
+};
+
 module.exports = {
   postContactValidation,
   putContactValidation,
   updateStatusContactValidation,
+  queryValidation,
 };

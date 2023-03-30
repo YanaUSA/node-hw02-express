@@ -7,6 +7,7 @@ const {
   postContactValidation,
   putContactValidation,
   updateStatusContactValidation,
+  queryValidation,
 } = require("../../middlewares/contactsValidationMiddleware");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
@@ -26,7 +27,7 @@ router.use(asyncWrapper(protectedRoutMiddleware));
 
 router.use("/:id", asyncWrapper(checkIfIdExist));
 
-router.get("/", asyncWrapper(getContacts));
+router.get("/", queryValidation, asyncWrapper(getContacts));
 
 router.get("/:id", asyncWrapper(getContactOnId));
 
