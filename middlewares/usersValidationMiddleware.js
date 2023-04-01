@@ -39,7 +39,11 @@ const postUserLoginValidation = (req, res, next) => {
   const validationResult = schema.validate(req.body);
 
   if (validationResult.error) {
-    return res.status(400).json({ message: `Email or password is invalid` });
+    const validationError = validationResult.error.details[0].context.key;
+
+    return res
+      .status(400)
+      .json({ message: `${validationError} field doesn't match the pattern` });
   }
 
   next();
