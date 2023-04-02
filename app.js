@@ -2,18 +2,16 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { mongoose, Types } = require("mongoose");
-const Contact = require("./models/contactsModel");
+const { mongoose } = require("mongoose");
 
 dotenv.config({ path: "./.env" });
 
 const contactsRouter = require("./routes/api/contacts");
+const usersRouter = require("./routes/api/users");
 
 const app = express();
 
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
-
-// mongoose.connect(process.env.MONGO_URL);
 
 async function main() {
   await mongoose.connect(process.env.MONGO_URL);
@@ -30,29 +28,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/contacts/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-
-    const idIsValid = Types.ObjectId.isValid(id);
-
-    if (!idIsValid) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    // const idExists = await Contact.findById(id);
-
-    const idExists = await Contact.exists({ _id: id });
-
-    if (!idExists) {
-      return res.status(404).json({ message: "Not found" });
-    }
-
-    next();
-  } catch (error) {
-    console.log(error.message);
-  }
-});
+app.use("/api/users", usersRouter);
 
 app.use("/api/contacts", contactsRouter);
 

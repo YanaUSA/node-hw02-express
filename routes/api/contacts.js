@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
+// const { Types } = require("mongoose");
+// const Contact = require("../../models/contactsModel");
 
 const {
   postContactValidation,
   putContactValidation,
   updateStatusContactValidation,
-} = require("../../middlewares/validationMiddleware");
+  queryValidation,
+} = require("../../middlewares/contactsValidationMiddleware");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
 
@@ -17,8 +20,14 @@ const {
   putContact,
   patchStatusContact,
 } = require("../../controllers/contactsControllers");
+const { protectedRoutMiddleware } = require("../../middlewares/authMiddleware");
+const { checkIfIdExist } = require("../../middlewares/checkIfIdExist");
 
-router.get("/", asyncWrapper(getContacts));
+router.use(asyncWrapper(protectedRoutMiddleware));
+
+router.use("/:id", asyncWrapper(checkIfIdExist));
+
+router.get("/", queryValidation, asyncWrapper(getContacts));
 
 router.get("/:id", asyncWrapper(getContactOnId));
 
