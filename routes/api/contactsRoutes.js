@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-// const { Types } = require("mongoose");
-// const Contact = require("../../models/contactsModel");
 
 const {
   postContactValidation,
@@ -10,7 +8,7 @@ const {
   queryValidation,
 } = require("../../middlewares/contactsValidationMiddleware");
 
-const { asyncWrapper } = require("../../helpers/apiHelpers");
+const { asyncWrapper } = require("../../helpers/asyncWrapper");
 
 const {
   getContacts,
