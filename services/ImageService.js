@@ -3,10 +3,21 @@ const fse = require("fs-extra");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const Jimp = require("jimp");
+const { emptyFolder } = require("../utils/deleteAvatar");
 
 class ImageService {
   static upload(name) {
-    const multerStorage = multer.memoryStorage();
+    const multerStorage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, "tmp");
+      },
+      filename: function (req, file, cb) {
+        const uniqueSuffix = uuidv4();
+        const extension = file.mimetype.split("/")[1];
+
+        cb(null, `${req.user.id}-${uniqueSuffix}.${extension}`);
+      },
+    });
 
     const multerFilter = (req, file, cb) => {
       if (file.mimetype.startsWith("image")) {
@@ -25,24 +36,33 @@ class ImageService {
     }).single(name);
   }
 
-  static async save(file, ...pathSegments) {
-    const filename = `${uuidv4()}.jpeg`;
-    const fullFilePath = path.join(process.cwd(), "public", ...pathSegments);
+  static async save(file, width, height, ...pathSegments) {
+    const imgWidth = width || 250;
+    const imgHeight = height || 250;
 
-    await fse.ensureDir(fullFilePath);
+    const oldFilePath = path.resolve(file.path);
 
-    await Jimp.read(file.buffer)
+    console.log("oldddddddddddd", oldFilePath);
+
+    const newFilePath = path.join(process.cwd(), "public", ...pathSegments);
+
+    // fse.ensureDir builds path to save file
+    await fse.ensureDir(newFilePath);
+
+    await Jimp.read(oldFilePath)
       .then((img) => {
         return img
-          .resize(250, 250)
+          .resize(imgWidth, imgHeight)
           .quality(60)
-          .write(path.join(fullFilePath, filename));
+          .write(path.join(newFilePath, file.filename));
       })
       .catch((err) => {
         console.error(err);
       });
 
-    return path.join(...pathSegments, filename);
+    // emptyFolder();
+
+    return path.join(...pathSegments, file.filename);
   }
 }
 

@@ -44,22 +44,25 @@ const postLoggedUser = async (req, res) => {
 
   const token = signToken(loggedUser.id);
 
-  const { email, subscription, avatarURL } = await saveTokenForUser(
-    loggedUser.id,
-    {
-      token,
-      user: loggedUser,
-    }
-  );
+  const { email, subscription } = await saveTokenForUser(loggedUser.id, {
+    token,
+    user: loggedUser,
+  });
 
-  res.status(200).json({ token, user: { email, subscription, avatarURL } });
+  res.status(200).json({ token, user: { email, subscription } });
 };
 
 const patchAvatar = async (req, res) => {
   const { file, user } = req;
 
   if (file) {
-    user.avatarURL = await ImageService.save(file, "avatars", user.id);
+    user.avatarURL = await ImageService.save(
+      file,
+      250,
+      250,
+      "avatars",
+      user.id
+    );
 
     const updatedUser = await user.save();
 
