@@ -5,6 +5,8 @@ const { v4: uuidv4 } = require("uuid");
 const Jimp = require("jimp");
 const { emptyFolder } = require("../utils/deleteAvatar");
 
+const fs = require("fs");
+
 class ImageService {
   static upload(name) {
     const multerStorage = multer.diskStorage({
@@ -42,8 +44,6 @@ class ImageService {
 
     const oldFilePath = path.resolve(file.path);
 
-    console.log("oldddddddddddd", oldFilePath);
-
     const newFilePath = path.join(process.cwd(), "public", ...pathSegments);
 
     // fse.ensureDir builds path to save file
@@ -60,7 +60,9 @@ class ImageService {
         console.error(err);
       });
 
-    // emptyFolder();
+    const tmpPath = path.resolve("./tmp");
+
+    emptyFolder(tmpPath);
 
     return path.join(...pathSegments, file.filename);
   }
