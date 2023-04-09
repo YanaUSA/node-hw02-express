@@ -49,7 +49,26 @@ const postUserLoginValidation = (req, res, next) => {
   next();
 };
 
+const patchAvatarValidation = (req, res, next) => {
+  const schema = Joi.object({
+    avatarURL: Joi.string().uri(),
+  });
+
+  const validationResult = schema.validate(req.body);
+
+  if (validationResult.error) {
+    const validationError = validationResult.error.details[0].context.key;
+
+    return res
+      .status(400)
+      .json({ message: `${validationError} field doesn't match the pattern` });
+  }
+
+  next();
+};
+
 module.exports = {
   postUserValidation,
   postUserLoginValidation,
+  patchAvatarValidation,
 };

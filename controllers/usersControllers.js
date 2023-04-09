@@ -5,7 +5,8 @@ const {
   deleteTokenFromDB,
   setSubscription,
 } = require("../utils/userUtils");
-const { signToken } = require("../services/services");
+const { signToken } = require("../services/JWTServices");
+const ImageService = require("../services/ImageService");
 
 const postUser = async (req, res, next) => {
   const newUser = await addUser(req.body);
@@ -51,6 +52,26 @@ const postLoggedUser = async (req, res) => {
   res.status(200).json({ token, user: { email, subscription } });
 };
 
+const patchAvatar = async (req, res) => {
+  const { file, user } = req;
+
+  if (file) {
+    user.avatarURL = await ImageService.save(
+      file,
+      250,
+      250,
+      "avatars"
+      // user.id
+    );
+
+    const updatedUser = await user.save();
+
+    return res.status(200).json({
+      avatarURL: updatedUser.avatarURL,
+    });
+  }
+};
+
 const postLogoutUser = async (req, res) => {
   const loggedUser = req.user;
 
@@ -89,6 +110,7 @@ const patchSubscription = async (req, res) => {
 module.exports = {
   postUser,
   postLoggedUser,
+  patchAvatar,
   postLogoutUser,
   getCurrentUser,
   patchSubscription,

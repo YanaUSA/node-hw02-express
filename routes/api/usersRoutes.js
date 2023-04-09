@@ -4,13 +4,19 @@ const router = express.Router();
 const {
   postUserValidation,
   postUserLoginValidation,
+  patchAvatarValidation,
 } = require("../../middlewares/usersValidationMiddleware");
 
-const { asyncWrapper } = require("../../helpers/apiHelpers");
+const { asyncWrapper } = require("../../helpers/asyncWrapper");
+
+const {
+  updateAvatarMiddleware,
+} = require("../../middlewares/updateAvatarMiddleware");
 
 const {
   postUser,
   postLoggedUser,
+  patchAvatar,
   postLogoutUser,
   getCurrentUser,
   patchSubscription,
@@ -22,10 +28,19 @@ router.post("/register", postUserValidation, asyncWrapper(postUser));
 
 router.post("/login", postUserLoginValidation, asyncWrapper(postLoggedUser));
 
-router.post("/logout", protectedRoutMiddleware, asyncWrapper(postLogoutUser));
+router.use("/", protectedRoutMiddleware);
 
-router.get("/current", protectedRoutMiddleware, asyncWrapper(getCurrentUser));
+router.patch(
+  "/avatars",
+  patchAvatarValidation,
+  updateAvatarMiddleware,
+  asyncWrapper(patchAvatar)
+);
 
-router.patch("/", protectedRoutMiddleware, asyncWrapper(patchSubscription));
+router.post("/logout", asyncWrapper(postLogoutUser));
+
+router.get("/current", asyncWrapper(getCurrentUser));
+
+router.patch("/", asyncWrapper(patchSubscription));
 
 module.exports = router;
