@@ -60,8 +60,8 @@ const patchAvatar = async (req, res) => {
       file,
       250,
       250,
-      "avatars",
-      user.id
+      "avatars"
+      // user.id
     );
 
     const updatedUser = await user.save();
