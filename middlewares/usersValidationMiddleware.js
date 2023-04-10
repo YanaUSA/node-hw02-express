@@ -49,7 +49,30 @@ const postUserLoginValidation = (req, res, next) => {
   next();
 };
 
+const postUserVerificationValidation = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+      })
+      .required(),
+  });
+
+  const validationResult = schema.validate(req.body);
+
+  if (validationResult.error) {
+    const validationError = validationResult.error.details[0].context.key;
+
+    return res
+      .status(400)
+      .json({ message: `missing required '${validationError}' field` });
+  }
+
+  next();
+};
+
 module.exports = {
   postUserValidation,
   postUserLoginValidation,
+  postUserVerificationValidation,
 };

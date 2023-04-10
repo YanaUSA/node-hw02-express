@@ -1,5 +1,5 @@
 const User = require("../models/usersModel");
-const { decoded } = require("../services/services");
+const { decoded } = require("../services/JWTservices");
 
 const protectedRoutMiddleware = async (req, res, next) => {
   const token =
