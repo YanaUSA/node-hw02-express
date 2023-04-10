@@ -1,11 +1,15 @@
+const sendEmail = require("../services/mailService");
+
 const {
   addUser,
+  verifyUser,
+  checkVerification,
   logUser,
   saveTokenForUser,
   deleteTokenFromDB,
   setSubscription,
 } = require("../utils/userUtils");
-const { signToken } = require("../services/JWTServices");
+const { signToken } = require("../services/JWTservices");
 const ImageService = require("../services/ImageService");
 
 const postUser = async (req, res, next) => {
@@ -17,36 +21,84 @@ const postUser = async (req, res, next) => {
 
   newUser.password = undefined;
 
-  const { email, subscription } = newUser;
+  const { email, verificationToken, subscription } = newUser;
+
+  const verifyEmail = {
+    to: email,
+    subject: "Test email",
+    text: "Please verify your email, click the link",
+    html: `Verification link <a target="blank" href="${process.env.BASE_URL}api/users/verify/${verificationToken}">`,
+  };
+
+  await sendEmail(verifyEmail);
 
   res.status(201).json({ user: { email, subscription } });
+};
+
+const getUserVerification = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  const userHasVerifyToken = await verifyUser(verificationToken);
+
+  if (!userHasVerifyToken) {
+    res.status(404).json({ message: "User not found" });
+  }
+
+  res.status(200).json({ message: "Verification successful" });
+};
+
+const postVerifiedUser = async (req, res) => {
+  const { email } = req.body;
+
+  const verifiedUser = await checkVerification({ email });
+
+  if (!verifiedUser) {
+    res.status(404).json({ message: "User not found" });
+  }
+  if (verifiedUser.verify) {
+    return res
+      .status(400)
+      .json({ message: "Verification has already been passed" });
+  }
+
+  const verifyEmail = {
+    to: email,
+    subject: "Test email",
+    text: "Please verify your email, click the link",
+    html: `Verification link <a target="blank" href="${process.env.BASE_URL}api/users/verify/${verifiedUser.verificationToken}">`,
+  };
+
+  await sendEmail(verifyEmail);
+
+  res.status(200).json({ message: "Verification email sent" });
 };
 
 const postLoggedUser = async (req, res) => {
   const { password } = req.body;
 
-  const loggedUser = await logUser(req.body);
+  const user = await logUser(req.body);
 
-  if (!loggedUser) {
+  if (!user) {
     return res.status(401).json({ message: "Email or password is wrong" });
   }
 
-  const passwordIsValid = await loggedUser.checkPassword(
-    password,
-    loggedUser.password
-  );
+  if (!user.verify) {
+    return res.status(401).json({ message: "Email is not verified" });
+  }
+
+  const passwordIsValid = await user.checkPassword(password, user.password);
 
   if (!passwordIsValid) {
     return res.status(401).json({ message: "Email or password is wrong" });
   }
 
-  loggedUser.password = undefined;
+  user.password = undefined;
 
-  const token = signToken(loggedUser.id);
+  const token = signToken(user.id);
 
-  const { email, subscription } = await saveTokenForUser(loggedUser.id, {
+  const { email, subscription } = await saveTokenForUser(user.id, {
     token,
-    user: loggedUser,
+    user,
   });
 
   res.status(200).json({ token, user: { email, subscription } });
@@ -114,4 +166,6 @@ module.exports = {
   postLogoutUser,
   getCurrentUser,
   patchSubscription,
+  getUserVerification,
+  postVerifiedUser,
 };

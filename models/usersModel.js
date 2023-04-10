@@ -23,6 +23,15 @@ const userSchema = new Schema({
     default: "starter",
   },
   token: String,
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    default: "",
+    required: [true, "Verify token is required"],
+  },
 });
 
 userSchema.pre("save", async function (next) {
