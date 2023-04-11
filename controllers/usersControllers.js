@@ -26,8 +26,8 @@ const postUser = async (req, res, next) => {
   const verifyEmail = {
     to: email,
     subject: "Test email",
-    text: "Please verify your email, click the link",
-    html: `Verification link <a target="blank" href="${process.env.BASE_URL}api/users/verify/${verificationToken}">`,
+    // text: "Please verify your email, click the link",
+    html: `<a target="_blank" href="${process.env.BASE_URL}api/users/verify/${verificationToken}"> Please verify your email, click the link</a>`,
   };
 
   await sendEmail(verifyEmail);
