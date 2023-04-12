@@ -1,3 +1,4 @@
+const User = require("../models/usersModel");
 const sendEmail = require("../services/mailService");
 
 const {
@@ -116,7 +117,16 @@ const patchAvatar = async (req, res) => {
       // user.id
     );
 
-    const updatedUser = await user.save();
+    // const updatedUser = await user.save();
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        ...user,
+        avatarURL: user.avatarURL,
+      },
+      { new: true }
+    );
 
     return res.status(200).json({
       avatarURL: updatedUser.avatarURL,
@@ -156,7 +166,7 @@ const patchSubscription = async (req, res) => {
 
   const { email, subscription } = changedSubscription;
 
-  res.sendStatus(200).json({ user: { email, subscription } });
+  res.status(200).json({ user: { email, subscription } });
 };
 
 module.exports = {

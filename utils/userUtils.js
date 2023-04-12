@@ -25,8 +25,8 @@ const verifyUser = async (verificationToken) => {
       return;
     }
 
-    return await User.findOneAndUpdate(
-      verificationToken,
+    return await User.findByIdAndUpdate(
+      userWithTokenExist._id,
       { verificationToken: null, verify: true },
       { new: true }
     );
@@ -89,14 +89,10 @@ const deleteTokenFromDB = async (id) => {
 
 const setSubscription = async (id, subscription) => {
   try {
-    const getUserSubscription = await User.findByIdAndUpdate(
-      id,
-      { subscription },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const getUserSubscription = await User.findByIdAndUpdate(id, subscription, {
+      new: true,
+      runValidators: true,
+    });
 
     return getUserSubscription;
   } catch (error) {
