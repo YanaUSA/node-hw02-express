@@ -19,6 +19,7 @@ const {
   patchStatusContact,
 } = require("../../controllers/contactsControllers");
 const { protectedRoutMiddleware } = require("../../middlewares/authMiddleware");
+
 const { checkIfIdExist } = require("../../middlewares/checkIfIdExist");
 
 router.use(asyncWrapper(protectedRoutMiddleware));

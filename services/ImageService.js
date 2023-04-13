@@ -63,8 +63,6 @@ class ImageService {
     emptyFolder(tmpPath);
 
     return path.join(...pathSegments, file.filename);
-
-    // console.log(path.join(...pathSegments, file.filename));
   }
 }
 
